@@ -3,14 +3,16 @@ import { query } from 'express';
 import { type } from 'os';
 import { CreateNinjaDto } from './dto/create-ninja.dto';
 import { UpdateNinjaDto } from './dto/update-ninja.dto';
+import { NinjasService } from './ninjas.service';
 
 @Controller('ninjas')
 export class NinjasController {
     
-    // GET /ninjas?type=fast --> []
+    // GET /ninjas?weapon=fast --> []
     @Get()
-    getNinjas(@Query('type') type: string){
-        return [{ type }]
+    getNinjas(@Query('weapon') weapon : 'stars' | 'nunchucks'){
+        const service = new NinjasService();
+        return service.getNinjas(weapon)
     }
 
     // GET /ninjas/:id --> { ... }
