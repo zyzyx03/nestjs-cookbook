@@ -1,49 +1,54 @@
 import { Controller,Get, Post, Put, Delete, Param, Query, Body} from '@nestjs/common';
-import { query } from 'express';
-import { type } from 'os';
 import { CreateNinjaDto } from './dto/create-ninja.dto';
 import { UpdateNinjaDto } from './dto/update-ninja.dto';
 import { NinjasService } from './ninjas.service';
 
+/*
+You can imagine something like this happened behind the scene (DI)
+const service = new NinjasService()
+const controller = new NinjasController(service)
+*/
+
 @Controller('ninjas')
 export class NinjasController {
-    
-    // GET /ninjas?weapon=fast --> []
+
+    /*
+    Avoid instantiate NinjasService to each route by declaring this constructor.
+    NinjasController depends on NinjasService by simply providing it as parameter
+    to the constructor nest will look at NinjasService type and automatically instantiate
+    */
+    constructor(private readonly ninjaService: NinjasService){}
+
+    // GET /ninjas?weapon=stars --> []
     @Get()
     getNinjas(@Query('weapon') weapon : 'stars' | 'nunchucks'){
-        const service = new NinjasService();
-        return service.getNinjas(weapon)
+        // Since NinjasService is a class it can be instatiated
+        // const service = new NinjasService()
+        return this.ninjaService.getNinjas(weapon)
     }
 
     // GET /ninjas/:id --> { ... }
     @Get(':id')
     getOneNinja(@Param('id') id: string){
-        return {
-            id,
-        }
+        return this.ninjaService.getNinja(+id)
     }
 
     // POST /ninjas/:id
     @Post()
     createNinja(@Body() createNinjaDto: CreateNinjaDto){
-        return {
-            name: createNinjaDto.name
-        }
+        return this.ninjaService.createNinja(createNinjaDto)
     }
 
     // PUT /ninjas/:id --> { ... }
     @Put(':id')
     updateNinja(@Param('id') id: string, @Body() updateNinjaDto: UpdateNinjaDto){
-        return {
-            id,
-            name: updateNinjaDto
-        }
+        return this.ninjaService.updateNinja(+id, updateNinjaDto)
     }
 
     // DELETE /ninjas/:id
     @Delete(':id')
-    removeNinja(){
-        return {}
+    removeNinja(@Param('id') id: string){
+        return this.ninjaService.removeNinja(+id)
     }
 
 }
