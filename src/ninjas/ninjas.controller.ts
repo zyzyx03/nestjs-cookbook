@@ -33,7 +33,7 @@ export class NinjasController {
         try {
             return this.ninjaService.getNinja(+id)
         }catch (err){
-            throw new NotFoundException
+            throw new NotFoundException()
         }
         
     }
