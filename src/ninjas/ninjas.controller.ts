@@ -1,4 +1,4 @@
-import { Controller,Get, Post, Put, Delete, Param, Query, Body, NotFoundException} from '@nestjs/common';
+import { Controller,Get, Post, Put, Delete, Param, Query, Body, NotFoundException, ParseIntPipe} from '@nestjs/common';
 import { CreateNinjaDto } from './dto/create-ninja.dto';
 import { UpdateNinjaDto } from './dto/update-ninja.dto';
 import { NinjasService } from './ninjas.service';
@@ -28,10 +28,12 @@ export class NinjasController {
     }
 
     // GET /ninjas/:id --> { ... }
+    // +id is a unary plus to convert string into an actual numeric
+    // nest pipe can also be used to convert from string to numeric 
     @Get(':id')
-    getOneNinja(@Param('id') id: string){
+    getOneNinja(@Param('id', ParseIntPipe) id: number){
         try {
-            return this.ninjaService.getNinja(+id)
+            return this.ninjaService.getNinja(id)
         }catch (err){
             throw new NotFoundException()
         }
@@ -46,14 +48,14 @@ export class NinjasController {
 
     // PUT /ninjas/:id --> { ... }
     @Put(':id')
-    updateNinja(@Param('id') id: string, @Body() updateNinjaDto: UpdateNinjaDto){
-        return this.ninjaService.updateNinja(+id, updateNinjaDto)
+    updateNinja(@Param('id', ParseIntPipe) id: number, @Body() updateNinjaDto: UpdateNinjaDto){
+        return this.ninjaService.updateNinja(id, updateNinjaDto)
     }
 
     // DELETE /ninjas/:id
     @Delete(':id')
-    removeNinja(@Param('id') id: string){
-        return this.ninjaService.removeNinja(+id)
+    removeNinja(@Param('id', ParseIntPipe) id: number){
+        return this.ninjaService.removeNinja(id)
     }
 
 }
